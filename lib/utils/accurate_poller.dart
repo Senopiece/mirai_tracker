@@ -13,7 +13,13 @@ class AccuratePoller<T> {
   DateTime? _lastInvocationTime;
 
   Future<void> _callbackWrapper() async {
-    final res = await source();
+    late T res;
+    try {
+      res = await source();
+    } catch (e) {
+      _scontroller.addError(e);
+      return;
+    }
     if (_pending) {
       _pending = false;
       _scontroller.add(res);
