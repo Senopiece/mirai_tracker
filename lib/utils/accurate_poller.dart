@@ -18,7 +18,6 @@ class AccuratePoller<T> {
   AccuratePoller(this.minInterval, this.source);
 
   void poll([Duration minResponseTime = const Duration(seconds: 0)]) {
-    print('$_runningFuture $_pending');
     if (_runningFuture) {
       _pending = true;
       _pendingMinResponseTime = minResponseTime;

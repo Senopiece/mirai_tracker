@@ -87,7 +87,6 @@ class _InternalChart extends StatelessWidget {
 }
 
 // TODO: zooming
-// TODO: correct inertia and scroll on different sizes
 class HumidityAndTemperatureChart extends StatefulWidget {
   final MiraiTracker tracker;
 
@@ -104,7 +103,8 @@ class HumidityAndTemperatureChart extends StatefulWidget {
 class _HumidityAndTemperatureChartState
     extends State<HumidityAndTemperatureChart> with TickerProviderStateMixin {
   var mostRight = DateTime.now();
-  DateTime get mostLeft => mostRight.subtract(const Duration(days: 1));
+  var shownInterval = const Duration(days: 1);
+  DateTime get mostLeft => mostRight.subtract(shownInterval);
 
   late AnimationController _acontroller;
   late Animation<int> _frictionAnimation;
@@ -187,147 +187,153 @@ class _HumidityAndTemperatureChartState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 0,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 0,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Colors.transparent,
+            width: 2,
           ),
-        ],
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.transparent,
-          width: 2,
         ),
-      ),
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-      clipBehavior: Clip.hardEdge,
-      height: 300,
-      child: StreamBuilder(
-        stream: poller.responsesStream,
-        builder: (context, snap) {
-          _error = !snap.hasData;
-          if (snap.hasData) {
-            // make chart from reports in (mostLeft, mostRight) window
-            final chart = <_ChartData>[];
-            chart.add(_ChartData(time: mostLeft));
-            for (var report in snap.data!) {
-              if (report.timestamp.isAfter(mostLeft) &&
-                  report.timestamp.isBefore(mostRight)) {
-                chart.add(
-                  _ChartData(
-                    time: report.timestamp.toLocal(),
-                    temperature: report.temp,
-                    humidity: report.hum,
-                  ),
-                );
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+        clipBehavior: Clip.hardEdge,
+        height: 300,
+        child: StreamBuilder(
+          stream: poller.responsesStream,
+          builder: (context, snap) {
+            _error = !snap.hasData;
+            if (snap.hasData) {
+              // make chart from reports in (mostLeft, mostRight) window
+              final chart = <_ChartData>[];
+              chart.add(_ChartData(time: mostLeft));
+              for (var report in snap.data!) {
+                if (report.timestamp.isAfter(mostLeft) &&
+                    report.timestamp.isBefore(mostRight)) {
+                  chart.add(
+                    _ChartData(
+                      time: report.timestamp.toLocal(),
+                      temperature: report.temp,
+                      humidity: report.hum,
+                    ),
+                  );
+                }
               }
-            }
-            chart.add(_ChartData(time: mostRight));
+              chart.add(_ChartData(time: mostRight));
 
-            // add gaps when time dist between points is more than 6 minutes
-            List<_ChartData> modifiedChart = [];
-            for (int i = 0; i < chart.length; i++) {
-              if (i > 0 &&
-                  chart[i].time.difference(chart[i - 1].time).inMinutes > 6) {
-                modifiedChart.add(
-                  _ChartData(time: chart[i].time),
-                );
+              // add gaps when time dist between points is more than 6 minutes
+              List<_ChartData> modifiedChart = [];
+              for (int i = 0; i < chart.length; i++) {
+                if (i > 0 &&
+                    chart[i].time.difference(chart[i - 1].time).inMinutes > 6) {
+                  modifiedChart.add(
+                    _ChartData(time: chart[i].time),
+                  );
+                }
+                modifiedChart.add(chart[i]);
               }
-              modifiedChart.add(chart[i]);
-            }
 
-            return GestureDetector(
-              onPanDown: (_) => _acontroller.stop(),
-              onHorizontalDragUpdate: (details) => _scroll(
-                details.delta.dx * -90000 ~/ MediaQuery.of(context).size.width,
-              ),
-              onHorizontalDragEnd: (details) {
-                double velocity = details.velocity.pixelsPerSecond.dx;
-                _frictionAnimation = IntTween(begin: -velocity.toInt(), end: 0)
-                    .animate(_acontroller);
-                _acontroller.reset();
-                _acontroller.forward();
-              },
-              child: StreamBuilder<bool>(
-                stream: poller.runningFutureStream,
-                builder: (context, snap) {
-                  if (poller.isRunningFuture) {
-                    return Stack(
-                      children: [
-                        Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.grey.withOpacity(0.1),
+              return GestureDetector(
+                onPanDown: (_) => _acontroller.stop(),
+                onHorizontalDragUpdate: (details) => _scroll(
+                  -shownInterval.inSeconds *
+                      details.delta.dx ~/
+                      constraints.maxWidth,
+                ),
+                onHorizontalDragEnd: (details) {
+                  int velocity = -details.velocity.pixelsPerSecond.dx.toInt();
+                  // TODO: somehow on web it coeficients are different, check the other platforms
+                  velocity *= shownInterval.inSeconds ~/ 10000;
+                  _frictionAnimation =
+                      IntTween(begin: velocity, end: 0).animate(_acontroller);
+                  _acontroller.reset();
+                  _acontroller.forward();
+                },
+                child: StreamBuilder<bool>(
+                  stream: poller.runningFutureStream,
+                  builder: (context, snap) {
+                    if (poller.isRunningFuture) {
+                      return Stack(
+                        children: [
+                          Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.grey.withOpacity(0.1),
+                              ),
                             ),
                           ),
-                        ),
-                        _InternalChart(
-                          data: modifiedChart,
-                        ),
-                      ],
-                    );
-                  } else {
-                    return _InternalChart(
-                      data: modifiedChart,
-                    );
-                  }
-                },
-              ),
-            );
-          } else if (snap.hasError) {
-            return Center(
-              child: StreamBuilder<bool>(
-                stream: poller.runningFutureStream,
-                builder: (context, snap) {
-                  // NOTE: poller.isRunningFuture != snap.data ?? false
-                  if (poller.isRunningFuture) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Failed to load',
-                          style: TextStyle(
-                            color: Theme.of(context).hintColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                          _InternalChart(
+                            data: modifiedChart,
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        InkWell(
-                          child: IconButton(
-                            onPressed: () => _scroll(0,
-                                minResponseTime:
-                                    const Duration(milliseconds: 300)),
-                            color: Theme.of(context).primaryColor,
-                            icon: const Icon(
-                              Icons.refresh,
-                              size: 50,
+                        ],
+                      );
+                    } else {
+                      return _InternalChart(
+                        data: modifiedChart,
+                      );
+                    }
+                  },
+                ),
+              );
+            } else if (snap.hasError) {
+              return Center(
+                child: StreamBuilder<bool>(
+                  stream: poller.runningFutureStream,
+                  builder: (context, snap) {
+                    // NOTE: poller.isRunningFuture != snap.data ?? false
+                    if (poller.isRunningFuture) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Failed to load',
+                            style: TextStyle(
+                              color: Theme.of(context).hintColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                      ],
-                    );
-                  }
-                },
-              ),
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
-    );
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          InkWell(
+                            child: IconButton(
+                              onPressed: () => _scroll(0,
+                                  minResponseTime:
+                                      const Duration(milliseconds: 300)),
+                              color: Theme.of(context).primaryColor,
+                              icon: const Icon(
+                                Icons.refresh,
+                                size: 50,
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                  },
+                ),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+      );
+    });
   }
 }
