@@ -55,9 +55,22 @@ class _InternalChart extends StatelessWidget {
         ],
         dateTimeFactory: const charts.LocalDateTimeFactory(),
         primaryMeasureAxis: const charts.NumericAxisSpec(
-          tickProviderSpec: charts.BasicNumericTickProviderSpec(
-            dataIsInWholeNumbers: true,
-            desiredTickCount: 5,
+          tickProviderSpec: charts.StaticNumericTickProviderSpec(
+            [
+              charts.TickSpec(-20),
+              charts.TickSpec(-10),
+              charts.TickSpec(0),
+              charts.TickSpec(10),
+              charts.TickSpec(20),
+              charts.TickSpec(30),
+              charts.TickSpec(40),
+              charts.TickSpec(50),
+              charts.TickSpec(60),
+              charts.TickSpec(70),
+              charts.TickSpec(80),
+              charts.TickSpec(90),
+              charts.TickSpec(100),
+            ],
           ),
         ),
         domainAxis: const charts.DateTimeAxisSpec(
@@ -73,54 +86,8 @@ class _InternalChart extends StatelessWidget {
   }
 }
 
-// class _InternalChart extends StatelessWidget {
-//   final List<_ChartData> data;
-
-//   const _InternalChart({
-//     Key? key,
-//     required this.data,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SingleChildScrollView(
-//       scrollDirection: Axis.horizontal,
-//       child: Padding(
-//         padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
-//         child: SfCartesianChart(
-//           // zoomPanBehavior: ZoomPanBehavior(enablePinching: true),
-//           primaryXAxis: DateTimeAxis(
-//             dateFormat: DateFormat('MM/dd/yyyy'),
-//             intervalType: DateTimeIntervalType.days,
-//           ),
-//           primaryYAxis: NumericAxis(
-//             minimum: -10,
-//             maximum: 60,
-//             interval: 20,
-//           ),
-//           series: <ChartSeries>[
-//             LineSeries<_ChartData, DateTime>(
-//               dataSource: data,
-//               xValueMapper: (_ChartData data, _) => data.time,
-//               yValueMapper: (_ChartData data, _) => data.temperature,
-//               name: 'Temperature',
-//               color: Colors.deepOrange,
-//             ),
-//             LineSeries<_ChartData, DateTime>(
-//               dataSource: data,
-//               xValueMapper: (_ChartData data, _) => data.time,
-//               yValueMapper: (_ChartData data, _) => data.humidity,
-//               name: 'Humidity',
-//               color: Colors.blue,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 // TODO: zooming
+// TODO: correct inertia and scroll on different sizes
 class HumidityAndTemperatureChart extends StatefulWidget {
   final MiraiTracker tracker;
 
@@ -145,6 +112,8 @@ class _HumidityAndTemperatureChartState
   late AccuratePoller<List<Record>> poller;
   late Timer actualizator;
 
+  bool _error = false;
+
   void _createPoller() {
     poller = AccuratePoller<List<Record>>(
       const Duration(seconds: 1),
@@ -160,7 +129,8 @@ class _HumidityAndTemperatureChartState
       const Duration(seconds: 10),
       (_) {
         final gap = DateTime.now().difference(mostRight);
-        if (const Duration(minutes: 3) < gap &&
+        if (!_error &&
+            const Duration(minutes: 3) < gap &&
             gap < const Duration(minutes: 7)) {
           _scroll(gap.inSeconds);
         }
@@ -198,7 +168,10 @@ class _HumidityAndTemperatureChartState
     actualizator.cancel();
   }
 
-  void _scroll(int dx) {
+  void _scroll(
+    int dx, {
+    Duration minResponseTime = const Duration(seconds: 0),
+  }) {
     setState(() {
       mostRight = mostRight.add(Duration(
         seconds: dx,
@@ -208,7 +181,7 @@ class _HumidityAndTemperatureChartState
       final now = DateTime.now();
       if (mostRight.compareTo(now) > 0) mostRight = now;
 
-      poller.poll();
+      poller.poll(minResponseTime);
     });
   }
 
@@ -238,6 +211,7 @@ class _HumidityAndTemperatureChartState
       child: StreamBuilder(
         stream: poller.responsesStream,
         builder: (context, snap) {
+          _error = !snap.hasData;
           if (snap.hasData) {
             // make chart from reports in (mostLeft, mostRight) window
             final chart = <_ChartData>[];
@@ -283,7 +257,7 @@ class _HumidityAndTemperatureChartState
               child: StreamBuilder<bool>(
                 stream: poller.runningFutureStream,
                 builder: (context, snap) {
-                  if (snap.data ?? false) {
+                  if (poller.isRunningFuture) {
                     return Stack(
                       children: [
                         Center(
@@ -308,23 +282,43 @@ class _HumidityAndTemperatureChartState
             );
           } else if (snap.hasError) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.close,
-                    size: 60,
-                    color: Colors.red,
-                  ),
-                  Text(
-                    'Failed to load',
-                    style: TextStyle(
-                      color: Theme.of(context).hintColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              child: StreamBuilder<bool>(
+                stream: poller.runningFutureStream,
+                builder: (context, snap) {
+                  // NOTE: poller.isRunningFuture != snap.data ?? false
+                  if (poller.isRunningFuture) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Failed to load',
+                          style: TextStyle(
+                            color: Theme.of(context).hintColor,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        InkWell(
+                          child: IconButton(
+                            onPressed: () => _scroll(0,
+                                minResponseTime:
+                                    const Duration(milliseconds: 300)),
+                            color: Theme.of(context).primaryColor,
+                            icon: const Icon(
+                              Icons.refresh,
+                              size: 50,
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  }
+                },
               ),
             );
           } else {
