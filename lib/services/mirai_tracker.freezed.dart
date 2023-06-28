@@ -116,8 +116,9 @@ class __$$_LocationCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Location implements _Location {
-  _$_Location({required this.lon, required this.lat, required this.rad});
+class _$_Location extends _Location {
+  _$_Location({required this.lon, required this.lat, required this.rad})
+      : super._();
 
   factory _$_Location.fromJson(Map<String, dynamic> json) =>
       _$$_LocationFromJson(json);
@@ -162,11 +163,12 @@ class _$_Location implements _Location {
   }
 }
 
-abstract class _Location implements Location {
+abstract class _Location extends Location {
   factory _Location(
       {required final double lon,
       required final double lat,
       required final double rad}) = _$_Location;
+  _Location._() : super._();
 
   factory _Location.fromJson(Map<String, dynamic> json) = _$_Location.fromJson;
 
@@ -351,5 +353,173 @@ abstract class _HumTempMeasure implements HumTempMeasure {
   @override
   @JsonKey(ignore: true)
   _$$_HumTempMeasureCopyWith<_$_HumTempMeasure> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+LocationInfo _$LocationInfoFromJson(Map<String, dynamic> json) {
+  return _LocationInfo.fromJson(json);
+}
+
+/// @nodoc
+mixin _$LocationInfo {
+  DateTime get timestamp => throw _privateConstructorUsedError;
+  Location get loc => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $LocationInfoCopyWith<LocationInfo> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $LocationInfoCopyWith<$Res> {
+  factory $LocationInfoCopyWith(
+          LocationInfo value, $Res Function(LocationInfo) then) =
+      _$LocationInfoCopyWithImpl<$Res, LocationInfo>;
+  @useResult
+  $Res call({DateTime timestamp, Location loc});
+
+  $LocationCopyWith<$Res> get loc;
+}
+
+/// @nodoc
+class _$LocationInfoCopyWithImpl<$Res, $Val extends LocationInfo>
+    implements $LocationInfoCopyWith<$Res> {
+  _$LocationInfoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? timestamp = null,
+    Object? loc = null,
+  }) {
+    return _then(_value.copyWith(
+      timestamp: null == timestamp
+          ? _value.timestamp
+          : timestamp // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      loc: null == loc
+          ? _value.loc
+          : loc // ignore: cast_nullable_to_non_nullable
+              as Location,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $LocationCopyWith<$Res> get loc {
+    return $LocationCopyWith<$Res>(_value.loc, (value) {
+      return _then(_value.copyWith(loc: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$_LocationInfoCopyWith<$Res>
+    implements $LocationInfoCopyWith<$Res> {
+  factory _$$_LocationInfoCopyWith(
+          _$_LocationInfo value, $Res Function(_$_LocationInfo) then) =
+      __$$_LocationInfoCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime timestamp, Location loc});
+
+  @override
+  $LocationCopyWith<$Res> get loc;
+}
+
+/// @nodoc
+class __$$_LocationInfoCopyWithImpl<$Res>
+    extends _$LocationInfoCopyWithImpl<$Res, _$_LocationInfo>
+    implements _$$_LocationInfoCopyWith<$Res> {
+  __$$_LocationInfoCopyWithImpl(
+      _$_LocationInfo _value, $Res Function(_$_LocationInfo) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? timestamp = null,
+    Object? loc = null,
+  }) {
+    return _then(_$_LocationInfo(
+      timestamp: null == timestamp
+          ? _value.timestamp
+          : timestamp // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      loc: null == loc
+          ? _value.loc
+          : loc // ignore: cast_nullable_to_non_nullable
+              as Location,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$_LocationInfo implements _LocationInfo {
+  _$_LocationInfo({required this.timestamp, required this.loc});
+
+  factory _$_LocationInfo.fromJson(Map<String, dynamic> json) =>
+      _$$_LocationInfoFromJson(json);
+
+  @override
+  final DateTime timestamp;
+  @override
+  final Location loc;
+
+  @override
+  String toString() {
+    return 'LocationInfo(timestamp: $timestamp, loc: $loc)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_LocationInfo &&
+            (identical(other.timestamp, timestamp) ||
+                other.timestamp == timestamp) &&
+            (identical(other.loc, loc) || other.loc == loc));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, timestamp, loc);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_LocationInfoCopyWith<_$_LocationInfo> get copyWith =>
+      __$$_LocationInfoCopyWithImpl<_$_LocationInfo>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_LocationInfoToJson(
+      this,
+    );
+  }
+}
+
+abstract class _LocationInfo implements LocationInfo {
+  factory _LocationInfo(
+      {required final DateTime timestamp,
+      required final Location loc}) = _$_LocationInfo;
+
+  factory _LocationInfo.fromJson(Map<String, dynamic> json) =
+      _$_LocationInfo.fromJson;
+
+  @override
+  DateTime get timestamp;
+  @override
+  Location get loc;
+  @override
+  @JsonKey(ignore: true)
+  _$$_LocationInfoCopyWith<_$_LocationInfo> get copyWith =>
       throw _privateConstructorUsedError;
 }

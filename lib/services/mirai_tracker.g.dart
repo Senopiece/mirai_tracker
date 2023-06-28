@@ -32,3 +32,15 @@ Map<String, dynamic> _$$_HumTempMeasureToJson(_$_HumTempMeasure instance) =>
       'temp': instance.temp,
       'hum': instance.hum,
     };
+
+_$_LocationInfo _$$_LocationInfoFromJson(Map<String, dynamic> json) =>
+    _$_LocationInfo(
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      loc: Location.fromJson(json['loc'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$_LocationInfoToJson(_$_LocationInfo instance) =>
+    <String, dynamic>{
+      'timestamp': instance.timestamp.toIso8601String(),
+      'loc': instance.loc,
+    };

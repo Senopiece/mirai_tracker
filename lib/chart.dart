@@ -29,7 +29,7 @@ class _InternalChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
+      padding: const EdgeInsets.fromLTRB(10, 0, 0, 5),
       child: charts.TimeSeriesChart(
         [
           charts.Series<_ChartData, DateTime>(
@@ -214,7 +214,9 @@ class _HumidityAndTemperatureChartState
               final chart = <_ChartData>[];
               chart.add(_ChartData(time: mostRight));
               for (var report in snap.data!) {
-                report = report.copyWith(timestamp: report.timestamp.toLocal());
+                report = report.copyWith(
+                  timestamp: report.timestamp.copyWith(isUtc: true).toLocal(),
+                );
                 if (report.timestamp.isAfter(mostLeft) &&
                     report.timestamp.isBefore(mostRight)) {
                   chart.add(

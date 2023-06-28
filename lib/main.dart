@@ -65,10 +65,11 @@ class _MyAppState extends State<MyApp> {
                 ),
                 _hintRow(Colors.blue, 'Humidity'),
                 _hintRow(Colors.red, 'Temperature'),
-                const HumidityAndTemperatureChart(
-                  tracker: MyApp.tracker,
-                ),
-                const Center(child: MapWidget(55.80824, 49.196555))
+                const HumidityAndTemperatureChart(tracker: MyApp.tracker),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: const TrackerMap(tracker: MyApp.tracker),
+                )
               ],
             ),
           ),
