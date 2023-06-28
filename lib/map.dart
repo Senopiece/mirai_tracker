@@ -55,7 +55,7 @@ class _MapWidgetState extends State<_MapWidget> {
               // these are pretty good, but can be better (the position somewhy is not the most exactly at the steeple)
               width:
                   42.7, // ya, this numbers matter (for the actual coordinate to be exactly at the steeple, as well as for rotation to be exactly around the steeple)
-              height: 80,
+              height: 72,
               // ya, stack matters (the same reason to be exactly at the steeple)
               builder: (context) => const Stack(
                 children: [
