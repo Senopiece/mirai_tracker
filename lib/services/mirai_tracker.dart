@@ -17,18 +17,15 @@ class Location with _$Location {
 }
 
 @freezed
-class Record with _$Record {
-  factory Record({
+class HumTempMeasure with _$HumTempMeasure {
+  factory HumTempMeasure({
     required DateTime timestamp,
-    required DateTime recieved,
     double? temp,
     double? hum,
-    double? bat,
-    Location? loc,
-    Location? gps,
-  }) = _Record;
+  }) = _HumTempMeasure;
 
-  factory Record.fromJson(Map<String, dynamic> json) => _$RecordFromJson(json);
+  factory HumTempMeasure.fromJson(Map<String, dynamic> json) =>
+      _$HumTempMeasureFromJson(json);
 }
 
 class MiraiTracker {
@@ -37,13 +34,13 @@ class MiraiTracker {
 
   const MiraiTracker(this.deviceId);
 
-  Future<List<Record>> getRecords(
+  Future<List<HumTempMeasure>> getHumTempChart(
     DateTime start,
     DateTime stop, {
     bool byReceive = false,
   }) async {
     final response = await _dio.get(
-      'https://mirai-tracker2.markovvn1.ru/records',
+      'https://mirai-tracker2.markovvn1.ru/hum_temp_chart',
       queryParameters: {
         'device_id': deviceId,
         'by_recieve': byReceive,
@@ -58,7 +55,7 @@ class MiraiTracker {
     );
     return List.generate(
       response.data.length,
-      (index) => Record.fromJson(response.data[index]),
+      (index) => HumTempMeasure.fromJson(response.data[index]),
     );
   }
 }

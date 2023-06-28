@@ -19,26 +19,16 @@ Map<String, dynamic> _$$_LocationToJson(_$_Location instance) =>
       'rad': instance.rad,
     };
 
-_$_Record _$$_RecordFromJson(Map<String, dynamic> json) => _$_Record(
+_$_HumTempMeasure _$$_HumTempMeasureFromJson(Map<String, dynamic> json) =>
+    _$_HumTempMeasure(
       timestamp: DateTime.parse(json['timestamp'] as String),
-      recieved: DateTime.parse(json['recieved'] as String),
       temp: (json['temp'] as num?)?.toDouble(),
       hum: (json['hum'] as num?)?.toDouble(),
-      bat: (json['bat'] as num?)?.toDouble(),
-      loc: json['loc'] == null
-          ? null
-          : Location.fromJson(json['loc'] as Map<String, dynamic>),
-      gps: json['gps'] == null
-          ? null
-          : Location.fromJson(json['gps'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_RecordToJson(_$_Record instance) => <String, dynamic>{
+Map<String, dynamic> _$$_HumTempMeasureToJson(_$_HumTempMeasure instance) =>
+    <String, dynamic>{
       'timestamp': instance.timestamp.toIso8601String(),
-      'recieved': instance.recieved.toIso8601String(),
       'temp': instance.temp,
       'hum': instance.hum,
-      'bat': instance.bat,
-      'loc': instance.loc,
-      'gps': instance.gps,
     };

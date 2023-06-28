@@ -106,16 +106,16 @@ class _HumidityAndTemperatureChartState
   late AnimationController _acontroller;
   late Animation<int> _frictionAnimation;
 
-  late AccuratePoller<List<Record>> poller;
+  late AccuratePoller<List<HumTempMeasure>> poller;
   late Timer actualizator;
 
   bool _error = false;
 
   void _createPoller() {
-    poller = AccuratePoller<List<Record>>(
+    poller = AccuratePoller<List<HumTempMeasure>>(
       const Duration(seconds: 1),
       () async {
-        return await widget.tracker.getRecords(
+        return await widget.tracker.getHumTempChart(
           mostLeft,
           mostRight,
         );

@@ -182,47 +182,35 @@ abstract class _Location implements Location {
       throw _privateConstructorUsedError;
 }
 
-Record _$RecordFromJson(Map<String, dynamic> json) {
-  return _Record.fromJson(json);
+HumTempMeasure _$HumTempMeasureFromJson(Map<String, dynamic> json) {
+  return _HumTempMeasure.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Record {
+mixin _$HumTempMeasure {
   DateTime get timestamp => throw _privateConstructorUsedError;
-  DateTime get recieved => throw _privateConstructorUsedError;
   double? get temp => throw _privateConstructorUsedError;
   double? get hum => throw _privateConstructorUsedError;
-  double? get bat => throw _privateConstructorUsedError;
-  Location? get loc => throw _privateConstructorUsedError;
-  Location? get gps => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $RecordCopyWith<Record> get copyWith => throw _privateConstructorUsedError;
+  $HumTempMeasureCopyWith<HumTempMeasure> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $RecordCopyWith<$Res> {
-  factory $RecordCopyWith(Record value, $Res Function(Record) then) =
-      _$RecordCopyWithImpl<$Res, Record>;
+abstract class $HumTempMeasureCopyWith<$Res> {
+  factory $HumTempMeasureCopyWith(
+          HumTempMeasure value, $Res Function(HumTempMeasure) then) =
+      _$HumTempMeasureCopyWithImpl<$Res, HumTempMeasure>;
   @useResult
-  $Res call(
-      {DateTime timestamp,
-      DateTime recieved,
-      double? temp,
-      double? hum,
-      double? bat,
-      Location? loc,
-      Location? gps});
-
-  $LocationCopyWith<$Res>? get loc;
-  $LocationCopyWith<$Res>? get gps;
+  $Res call({DateTime timestamp, double? temp, double? hum});
 }
 
 /// @nodoc
-class _$RecordCopyWithImpl<$Res, $Val extends Record>
-    implements $RecordCopyWith<$Res> {
-  _$RecordCopyWithImpl(this._value, this._then);
+class _$HumTempMeasureCopyWithImpl<$Res, $Val extends HumTempMeasure>
+    implements $HumTempMeasureCopyWith<$Res> {
+  _$HumTempMeasureCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -233,22 +221,14 @@ class _$RecordCopyWithImpl<$Res, $Val extends Record>
   @override
   $Res call({
     Object? timestamp = null,
-    Object? recieved = null,
     Object? temp = freezed,
     Object? hum = freezed,
-    Object? bat = freezed,
-    Object? loc = freezed,
-    Object? gps = freezed,
   }) {
     return _then(_value.copyWith(
       timestamp: null == timestamp
           ? _value.timestamp
           : timestamp // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      recieved: null == recieved
-          ? _value.recieved
-          : recieved // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       temp: freezed == temp
           ? _value.temp
           : temp // ignore: cast_nullable_to_non_nullable
@@ -257,93 +237,40 @@ class _$RecordCopyWithImpl<$Res, $Val extends Record>
           ? _value.hum
           : hum // ignore: cast_nullable_to_non_nullable
               as double?,
-      bat: freezed == bat
-          ? _value.bat
-          : bat // ignore: cast_nullable_to_non_nullable
-              as double?,
-      loc: freezed == loc
-          ? _value.loc
-          : loc // ignore: cast_nullable_to_non_nullable
-              as Location?,
-      gps: freezed == gps
-          ? _value.gps
-          : gps // ignore: cast_nullable_to_non_nullable
-              as Location?,
     ) as $Val);
   }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $LocationCopyWith<$Res>? get loc {
-    if (_value.loc == null) {
-      return null;
-    }
-
-    return $LocationCopyWith<$Res>(_value.loc!, (value) {
-      return _then(_value.copyWith(loc: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $LocationCopyWith<$Res>? get gps {
-    if (_value.gps == null) {
-      return null;
-    }
-
-    return $LocationCopyWith<$Res>(_value.gps!, (value) {
-      return _then(_value.copyWith(gps: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
-abstract class _$$_RecordCopyWith<$Res> implements $RecordCopyWith<$Res> {
-  factory _$$_RecordCopyWith(_$_Record value, $Res Function(_$_Record) then) =
-      __$$_RecordCopyWithImpl<$Res>;
+abstract class _$$_HumTempMeasureCopyWith<$Res>
+    implements $HumTempMeasureCopyWith<$Res> {
+  factory _$$_HumTempMeasureCopyWith(
+          _$_HumTempMeasure value, $Res Function(_$_HumTempMeasure) then) =
+      __$$_HumTempMeasureCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {DateTime timestamp,
-      DateTime recieved,
-      double? temp,
-      double? hum,
-      double? bat,
-      Location? loc,
-      Location? gps});
-
-  @override
-  $LocationCopyWith<$Res>? get loc;
-  @override
-  $LocationCopyWith<$Res>? get gps;
+  $Res call({DateTime timestamp, double? temp, double? hum});
 }
 
 /// @nodoc
-class __$$_RecordCopyWithImpl<$Res>
-    extends _$RecordCopyWithImpl<$Res, _$_Record>
-    implements _$$_RecordCopyWith<$Res> {
-  __$$_RecordCopyWithImpl(_$_Record _value, $Res Function(_$_Record) _then)
+class __$$_HumTempMeasureCopyWithImpl<$Res>
+    extends _$HumTempMeasureCopyWithImpl<$Res, _$_HumTempMeasure>
+    implements _$$_HumTempMeasureCopyWith<$Res> {
+  __$$_HumTempMeasureCopyWithImpl(
+      _$_HumTempMeasure _value, $Res Function(_$_HumTempMeasure) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? timestamp = null,
-    Object? recieved = null,
     Object? temp = freezed,
     Object? hum = freezed,
-    Object? bat = freezed,
-    Object? loc = freezed,
-    Object? gps = freezed,
   }) {
-    return _then(_$_Record(
+    return _then(_$_HumTempMeasure(
       timestamp: null == timestamp
           ? _value.timestamp
           : timestamp // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      recieved: null == recieved
-          ? _value.recieved
-          : recieved // ignore: cast_nullable_to_non_nullable
               as DateTime,
       temp: freezed == temp
           ? _value.temp
@@ -353,120 +280,76 @@ class __$$_RecordCopyWithImpl<$Res>
           ? _value.hum
           : hum // ignore: cast_nullable_to_non_nullable
               as double?,
-      bat: freezed == bat
-          ? _value.bat
-          : bat // ignore: cast_nullable_to_non_nullable
-              as double?,
-      loc: freezed == loc
-          ? _value.loc
-          : loc // ignore: cast_nullable_to_non_nullable
-              as Location?,
-      gps: freezed == gps
-          ? _value.gps
-          : gps // ignore: cast_nullable_to_non_nullable
-              as Location?,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$_Record implements _Record {
-  _$_Record(
-      {required this.timestamp,
-      required this.recieved,
-      this.temp,
-      this.hum,
-      this.bat,
-      this.loc,
-      this.gps});
+class _$_HumTempMeasure implements _HumTempMeasure {
+  _$_HumTempMeasure({required this.timestamp, this.temp, this.hum});
 
-  factory _$_Record.fromJson(Map<String, dynamic> json) =>
-      _$$_RecordFromJson(json);
+  factory _$_HumTempMeasure.fromJson(Map<String, dynamic> json) =>
+      _$$_HumTempMeasureFromJson(json);
 
   @override
   final DateTime timestamp;
   @override
-  final DateTime recieved;
-  @override
   final double? temp;
   @override
   final double? hum;
-  @override
-  final double? bat;
-  @override
-  final Location? loc;
-  @override
-  final Location? gps;
 
   @override
   String toString() {
-    return 'Record(timestamp: $timestamp, recieved: $recieved, temp: $temp, hum: $hum, bat: $bat, loc: $loc, gps: $gps)';
+    return 'HumTempMeasure(timestamp: $timestamp, temp: $temp, hum: $hum)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Record &&
+            other is _$_HumTempMeasure &&
             (identical(other.timestamp, timestamp) ||
                 other.timestamp == timestamp) &&
-            (identical(other.recieved, recieved) ||
-                other.recieved == recieved) &&
             (identical(other.temp, temp) || other.temp == temp) &&
-            (identical(other.hum, hum) || other.hum == hum) &&
-            (identical(other.bat, bat) || other.bat == bat) &&
-            (identical(other.loc, loc) || other.loc == loc) &&
-            (identical(other.gps, gps) || other.gps == gps));
+            (identical(other.hum, hum) || other.hum == hum));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, timestamp, recieved, temp, hum, bat, loc, gps);
+  int get hashCode => Object.hash(runtimeType, timestamp, temp, hum);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RecordCopyWith<_$_Record> get copyWith =>
-      __$$_RecordCopyWithImpl<_$_Record>(this, _$identity);
+  _$$_HumTempMeasureCopyWith<_$_HumTempMeasure> get copyWith =>
+      __$$_HumTempMeasureCopyWithImpl<_$_HumTempMeasure>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RecordToJson(
+    return _$$_HumTempMeasureToJson(
       this,
     );
   }
 }
 
-abstract class _Record implements Record {
-  factory _Record(
+abstract class _HumTempMeasure implements HumTempMeasure {
+  factory _HumTempMeasure(
       {required final DateTime timestamp,
-      required final DateTime recieved,
       final double? temp,
-      final double? hum,
-      final double? bat,
-      final Location? loc,
-      final Location? gps}) = _$_Record;
+      final double? hum}) = _$_HumTempMeasure;
 
-  factory _Record.fromJson(Map<String, dynamic> json) = _$_Record.fromJson;
+  factory _HumTempMeasure.fromJson(Map<String, dynamic> json) =
+      _$_HumTempMeasure.fromJson;
 
   @override
   DateTime get timestamp;
-  @override
-  DateTime get recieved;
   @override
   double? get temp;
   @override
   double? get hum;
   @override
-  double? get bat;
-  @override
-  Location? get loc;
-  @override
-  Location? get gps;
-  @override
   @JsonKey(ignore: true)
-  _$$_RecordCopyWith<_$_Record> get copyWith =>
+  _$$_HumTempMeasureCopyWith<_$_HumTempMeasure> get copyWith =>
       throw _privateConstructorUsedError;
 }
