@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'chart.dart';
+import 'map.dart';
 import 'services/mirai_tracker.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   static const tracker = MiraiTracker("aremfincs1uk8m4rvrk9");
 
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // so that all the child states would be reloaded on my setState()
+  var _childrenKey = UniqueKey();
 
   Widget _hintRow(Color color, String text) {
     return Container(
@@ -40,20 +49,29 @@ class MyApp extends StatelessWidget {
       title: 'Mirai Tracker',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Report History'),
+          title: const Text('Mirai Tracker'),
           centerTitle: true,
         ),
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 20,
+        body: RefreshIndicator(
+          onRefresh: () async => setState(() {
+            _childrenKey = UniqueKey();
+          }),
+          child: SingleChildScrollView(
+            child: Column(
+              key: _childrenKey,
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                _hintRow(Colors.blue, 'Humidity'),
+                _hintRow(Colors.red, 'Temperature'),
+                const HumidityAndTemperatureChart(
+                  tracker: MyApp.tracker,
+                ),
+                const Center(child: MapWidget(55.80824, 49.196555))
+              ],
             ),
-            _hintRow(Colors.blue, 'Humidity'),
-            _hintRow(Colors.red, 'Temperature'),
-            const HumidityAndTemperatureChart(
-              tracker: tracker,
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -50,9 +50,6 @@ class _InternalChart extends StatelessWidget {
           ),
         ],
         animate: false,
-        behaviors: [
-          // charts.PanAndZoomBehavior(),
-        ],
         dateTimeFactory: const charts.LocalDateTimeFactory(),
         primaryMeasureAxis: const charts.NumericAxisSpec(
           tickProviderSpec: charts.StaticNumericTickProviderSpec(
@@ -86,7 +83,6 @@ class _InternalChart extends StatelessWidget {
   }
 }
 
-// TODO: zooming
 class HumidityAndTemperatureChart extends StatefulWidget {
   final MiraiTracker tracker;
 
@@ -104,6 +100,7 @@ class _HumidityAndTemperatureChartState
     extends State<HumidityAndTemperatureChart> with TickerProviderStateMixin {
   var mostRight = DateTime.now();
   var shownInterval = const Duration(days: 1);
+  late Duration _captureInterval;
   DateTime get mostLeft => mostRight.subtract(shownInterval);
 
   late AnimationController _acontroller;
@@ -205,7 +202,6 @@ class _HumidityAndTemperatureChartState
             width: 2,
           ),
         ),
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
         clipBehavior: Clip.hardEdge,
         height: 300,
@@ -245,6 +241,7 @@ class _HumidityAndTemperatureChartState
 
               return GestureDetector(
                 onPanDown: (_) => _acontroller.stop(),
+                // TODO: some mobile browsers somewhy cannot scroll
                 onHorizontalDragUpdate: (details) => _scroll(
                   -shownInterval.inSeconds *
                       details.delta.dx ~/
@@ -252,12 +249,18 @@ class _HumidityAndTemperatureChartState
                 ),
                 onHorizontalDragEnd: (details) {
                   int velocity = -details.velocity.pixelsPerSecond.dx.toInt();
-                  // TODO: somehow on web it coeficients are different, check the other platforms
                   velocity *= shownInterval.inSeconds ~/ 10000;
                   _frictionAnimation =
                       IntTween(begin: velocity, end: 0).animate(_acontroller);
                   _acontroller.reset();
                   _acontroller.forward();
+                },
+                // TODO: why is this not working
+                // TODO: after making it working, make centrition in focal point
+                onScaleStart: (details) => _captureInterval = shownInterval,
+                onScaleUpdate: (details) {
+                  print(details.scale);
+                  shownInterval = _captureInterval * details.scale;
                 },
                 child: StreamBuilder<bool>(
                   stream: poller.runningFutureStream,
@@ -268,7 +271,7 @@ class _HumidityAndTemperatureChartState
                           Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.grey.withOpacity(0.1),
+                                Colors.grey.withOpacity(0.2),
                               ),
                             ),
                           ),
