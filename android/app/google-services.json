@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1043409295320",
+    "project_id": "miraitracker-c0c33",
+    "storage_bucket": "miraitracker-c0c33.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043409295320:android:6f88dc3fd6d935cba884ad",
+        "android_client_info": {
+          "package_name": "com.example.mirai_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1043409295320-7bqucqt45iti9ujlmgqvo31bgfl4j8rs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyeXFwDDzRlzdgRgNCAVE14ynpGgg2CYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1043409295320-7bqucqt45iti9ujlmgqvo31bgfl4j8rs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
