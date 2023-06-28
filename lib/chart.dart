@@ -212,26 +212,28 @@ class _HumidityAndTemperatureChartState
             if (snap.hasData) {
               // make chart from reports in (mostLeft, mostRight) window
               final chart = <_ChartData>[];
-              chart.add(_ChartData(time: mostLeft));
+              chart.add(_ChartData(time: mostRight));
               for (var report in snap.data!) {
+                report = report.copyWith(timestamp: report.timestamp.toLocal());
                 if (report.timestamp.isAfter(mostLeft) &&
                     report.timestamp.isBefore(mostRight)) {
                   chart.add(
                     _ChartData(
-                      time: report.timestamp.toLocal(),
+                      time: report.timestamp,
                       temperature: report.temp,
                       humidity: report.hum,
                     ),
                   );
                 }
               }
-              chart.add(_ChartData(time: mostRight));
+              chart.add(_ChartData(time: mostLeft));
 
               // add gaps when time dist between points is more than 6 minutes
+              // assuming chart times are descending order
               List<_ChartData> modifiedChart = [];
               for (int i = 0; i < chart.length; i++) {
                 if (i > 0 &&
-                    chart[i].time.difference(chart[i - 1].time).inMinutes > 6) {
+                    chart[i - 1].time.difference(chart[i].time).inMinutes > 6) {
                   modifiedChart.add(
                     _ChartData(time: chart[i].time),
                   );
