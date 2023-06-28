@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'chart.dart';
 import 'map.dart';
@@ -43,6 +44,26 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  Widget _content() {
+    return SingleChildScrollView(
+      child: Column(
+        key: _childrenKey,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          _hintRow(Colors.blue, 'Humidity'),
+          _hintRow(Colors.red, 'Temperature'),
+          const HumidityAndTemperatureChart(tracker: MyApp.tracker),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: TrackerMap(tracker: MyApp.tracker),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -52,28 +73,14 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Mirai Tracker'),
           centerTitle: true,
         ),
-        body: RefreshIndicator(
-          onRefresh: () async => setState(() {
-            _childrenKey = UniqueKey();
-          }),
-          child: SingleChildScrollView(
-            child: Column(
-              key: _childrenKey,
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                _hintRow(Colors.blue, 'Humidity'),
-                _hintRow(Colors.red, 'Temperature'),
-                const HumidityAndTemperatureChart(tracker: MyApp.tracker),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: const TrackerMap(tracker: MyApp.tracker),
-                )
-              ],
-            ),
-          ),
-        ),
+        body: kIsWeb // no refresh indicator on web platform
+            ? _content()
+            : RefreshIndicator(
+                onRefresh: () async => setState(() {
+                  _childrenKey = UniqueKey();
+                }),
+                child: _content(),
+              ),
       ),
     );
   }
