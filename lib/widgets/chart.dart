@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:intl/intl.dart';
 
-import 'services/mirai_tracker.dart';
-import 'utils/accurate_poller.dart';
+import '../services/mirai_tracker.dart';
+import '../utils/accurate_poller.dart';
 
 class _ChartData {
   final DateTime time;
@@ -18,6 +19,7 @@ class _ChartData {
   });
 }
 
+// TODO: hint on a point of when it is belonging and with what value
 class _InternalChart extends StatelessWidget {
   final List<_ChartData> data;
 
@@ -54,7 +56,7 @@ class _InternalChart extends StatelessWidget {
         primaryMeasureAxis: const charts.NumericAxisSpec(
           tickProviderSpec: charts.StaticNumericTickProviderSpec(
             [
-              charts.TickSpec(-20),
+              charts.TickSpec(-20, label: ''),
               charts.TickSpec(-10),
               charts.TickSpec(0),
               charts.TickSpec(10),
@@ -72,9 +74,9 @@ class _InternalChart extends StatelessWidget {
         ),
         domainAxis: const charts.DateTimeAxisSpec(
           tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
-            day: charts.TimeFormatterSpec(
-              format: 'd',
-              transitionFormat: 'MM/dd/yyyy',
+            hour: charts.TimeFormatterSpec(
+              format: 'H:mm',
+              transitionFormat: 'MMM d H:mm',
             ),
           ),
         ),
@@ -202,7 +204,7 @@ class _HumidityAndTemperatureChartState
             width: 2,
           ),
         ),
-        margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+        margin: const EdgeInsets.fromLTRB(10, 20, 10, 14),
         clipBehavior: Clip.hardEdge,
         height: 300,
         child: StreamBuilder(
@@ -212,7 +214,7 @@ class _HumidityAndTemperatureChartState
             if (snap.hasData) {
               // make chart from reports in (mostLeft, mostRight) window
               final chart = <_ChartData>[];
-              chart.add(_ChartData(time: mostRight));
+              chart.add(_ChartData(time: mostLeft));
               for (var report in snap.data!) {
                 report = report.copyWith(
                   timestamp: report.timestamp.copyWith(isUtc: true).toLocal(),
@@ -228,14 +230,18 @@ class _HumidityAndTemperatureChartState
                   );
                 }
               }
-              chart.add(_ChartData(time: mostLeft));
+              chart.add(_ChartData(time: mostRight));
 
               // add gaps when time dist between points is more than 6 minutes
-              // assuming chart times are descending order
               List<_ChartData> modifiedChart = [];
               for (int i = 0; i < chart.length; i++) {
                 if (i > 0 &&
-                    chart[i - 1].time.difference(chart[i].time).inMinutes > 6) {
+                    chart[i - 1]
+                            .time
+                            .difference(chart[i].time)
+                            .abs()
+                            .inMinutes >
+                        6) {
                   modifiedChart.add(
                     _ChartData(time: chart[i].time),
                   );

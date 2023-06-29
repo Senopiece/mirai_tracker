@@ -6,7 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mirai_tracker/services/mirai_tracker.dart';
 
-import 'utils/accurate_poller.dart';
+import '../utils/accurate_poller.dart';
 
 class _MapWidget extends StatefulWidget {
   final LatLng point;
@@ -168,7 +168,7 @@ class _TrackerMapState extends State<TrackerMap> {
                       horizontal: 5,
                     ),
                     child: Text(
-                      DateFormat('yyyy-MM-dd HH:mm:ss').format(
+                      DateFormat('yyyy-MM-dd H:mm:ss').format(
                           snap.data!.timestamp.copyWith(isUtc: true).toLocal()),
                     ),
                   ),
@@ -203,7 +203,7 @@ class _TrackerMapState extends State<TrackerMap> {
               width: 2,
             ),
           ),
-          clipBehavior: Clip.hardEdge,
+          // clipBehavior: Clip.antiAliasWithSaveLayer,
           margin: const EdgeInsets.all(10),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
