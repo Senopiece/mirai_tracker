@@ -74,6 +74,10 @@ class _InternalChart extends StatelessWidget {
         ),
         domainAxis: const charts.DateTimeAxisSpec(
           tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
+            minute: charts.TimeFormatterSpec(
+              format: 'MMM d H:mm',
+              transitionFormat: 'H:mm',
+            ),
             hour: charts.TimeFormatterSpec(
               format: 'H:mm',
               transitionFormat: 'MMM d H:mm',
@@ -101,7 +105,7 @@ class HumidityAndTemperatureChart extends StatefulWidget {
 class _HumidityAndTemperatureChartState
     extends State<HumidityAndTemperatureChart> with TickerProviderStateMixin {
   var mostRight = DateTime.now();
-  var shownInterval = const Duration(days: 1);
+  var shownInterval = const Duration(minutes: 120);
   late Duration _captureInterval;
   DateTime get mostLeft => mostRight.subtract(shownInterval);
 
@@ -259,7 +263,6 @@ class _HumidityAndTemperatureChartState
                 ),
                 onHorizontalDragEnd: (details) {
                   int velocity = -details.velocity.pixelsPerSecond.dx.toInt();
-                  velocity *= shownInterval.inSeconds ~/ 10000;
                   _frictionAnimation =
                       IntTween(begin: velocity, end: 0).animate(_acontroller);
                   _acontroller.reset();
