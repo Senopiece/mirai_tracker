@@ -102,6 +102,11 @@ class IntervalCache<T extends DataPoint> {
     }
   }
 
+  void freeCache() {
+    _cachedInterval = Interval(DateTime(2017), DateTime(2017));
+    _cachedPoints = [];
+  }
+
   bool get isRunningFuture => _runningFuture;
   Stream<bool> get runningFutureStream => _fcontroller.stream;
   Stream<List<T>> get responsesStream => _scontroller.stream;

@@ -230,13 +230,16 @@ class _HumidityAndTemperatureChartState
               final chart = <_ChartData>[];
               chart.add(_ChartData(time: mostLeft));
               for (var report in snap.data!) {
-                chart.add(
-                  _ChartData(
-                    time: report.timestamp,
-                    temperature: report.temp?.clamp(-20.0, 100.0),
-                    humidity: report.hum?.clamp(-20.0, 100.0),
-                  ),
-                );
+                if (report.timestamp.isAfter(mostLeft) &&
+                    report.timestamp.isBefore(mostRight)) {
+                  chart.add(
+                    _ChartData(
+                      time: report.timestamp,
+                      temperature: report.temp?.clamp(-20.0, 100.0),
+                      humidity: report.hum?.clamp(-20.0, 100.0),
+                    ),
+                  );
+                }
               }
               chart.add(_ChartData(time: mostRight));
 
@@ -330,9 +333,12 @@ class _HumidityAndTemperatureChartState
                           ),
                           InkWell(
                             child: IconButton(
-                              onPressed: () => _scroll(0,
-                                  minResponseTime:
-                                      const Duration(milliseconds: 300)),
+                              onPressed: () {
+                                source.freeCache();
+                                _scroll(0,
+                                    minResponseTime:
+                                        const Duration(milliseconds: 300));
+                              },
                               color: Theme.of(context).primaryColor,
                               icon: const Icon(
                                 Icons.refresh,
