@@ -88,7 +88,7 @@ class _WatchPageState extends State<WatchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mirai Tracker'),
+        title: const Text('Tracker'),
         centerTitle: true,
       ),
       body: kIsWeb // no refresh indicator on web platform

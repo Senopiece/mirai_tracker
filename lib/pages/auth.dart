@@ -36,7 +36,7 @@ class _AuthPageState extends State<AuthPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Mirai Tracker',
+              'Tracker',
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 40,
