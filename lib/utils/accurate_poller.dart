@@ -11,9 +11,8 @@ class AccuratePoller<T> {
   bool _runningFuture = false; // _runningFuture = false => _pending = false
   DateTime? _lastInvocationTime;
 
-  final StreamController<T> _scontroller = StreamController<T>.broadcast();
-  final StreamController<bool> _fcontroller =
-      StreamController<bool>.broadcast();
+  final _scontroller = StreamController<T>.broadcast();
+  final _fcontroller = StreamController<bool>.broadcast();
 
   AccuratePoller(this.minInterval, this.source);
 

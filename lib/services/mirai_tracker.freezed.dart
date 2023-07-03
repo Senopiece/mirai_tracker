@@ -288,8 +288,8 @@ class __$$_HumTempMeasureCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_HumTempMeasure implements _HumTempMeasure {
-  _$_HumTempMeasure({required this.timestamp, this.temp, this.hum});
+class _$_HumTempMeasure extends _HumTempMeasure {
+  _$_HumTempMeasure({required this.timestamp, this.temp, this.hum}) : super._();
 
   factory _$_HumTempMeasure.fromJson(Map<String, dynamic> json) =>
       _$$_HumTempMeasureFromJson(json);
@@ -335,11 +335,12 @@ class _$_HumTempMeasure implements _HumTempMeasure {
   }
 }
 
-abstract class _HumTempMeasure implements HumTempMeasure {
+abstract class _HumTempMeasure extends HumTempMeasure {
   factory _HumTempMeasure(
       {required final DateTime timestamp,
       final double? temp,
       final double? hum}) = _$_HumTempMeasure;
+  _HumTempMeasure._() : super._();
 
   factory _HumTempMeasure.fromJson(Map<String, dynamic> json) =
       _$_HumTempMeasure.fromJson;

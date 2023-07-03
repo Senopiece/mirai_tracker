@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:intl/intl.dart';
 
 import '../services/mirai_tracker.dart';
-import '../utils/accurate_poller.dart';
+import '../utils/ap_interval_adapter.dart';
+import '../utils/interval_cache.dart' as ic;
 
 class _ChartData {
   final DateTime time;
@@ -112,21 +112,31 @@ class _HumidityAndTemperatureChartState
   late AnimationController _acontroller;
   late Animation<int> _frictionAnimation;
 
-  late AccuratePoller<List<HumTempMeasure>> poller;
+  late ic.IntervalCache<HumTempMeasure> source;
   late Timer actualizator;
 
   bool _error = false;
 
   void _createPoller() {
-    poller = AccuratePoller<List<HumTempMeasure>>(
+    // for adopting accurate poller for interval cache API
+    final poller = APintervalAdapter<List<HumTempMeasure>>(
       const Duration(seconds: 1),
-      () async {
-        return await widget.tracker.getHumTempChart(
-          mostLeft,
-          mostRight,
-        );
+      (intervals) async {
+        final List<HumTempMeasure> points = [];
+
+        for (var interval in intervals) {
+          final snap = await widget.tracker.getHumTempChart(
+            interval.start,
+            interval.stop,
+          );
+          points.addAll(snap);
+        }
+
+        return points;
       },
     );
+
+    source = ic.IntervalCache<HumTempMeasure>(poller.get);
 
     actualizator = Timer.periodic(
       const Duration(seconds: 10),
@@ -152,7 +162,6 @@ class _HumidityAndTemperatureChartState
   void initState() {
     super.initState();
     _createPoller();
-    poller.poll();
   }
 
   @override
@@ -161,7 +170,6 @@ class _HumidityAndTemperatureChartState
     super.reassemble();
     actualizator.cancel();
     _createPoller();
-    poller.poll();
   }
 
   @override
@@ -184,12 +192,14 @@ class _HumidityAndTemperatureChartState
       final now = DateTime.now();
       if (mostRight.compareTo(now) > 0) mostRight = now;
 
-      poller.poll(minResponseTime);
+      source.poll(ic.Interval(mostLeft, mostRight),
+          minResponseTime: minResponseTime);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    source.poll(ic.Interval(mostLeft, mostRight));
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         decoration: BoxDecoration(
@@ -212,7 +222,7 @@ class _HumidityAndTemperatureChartState
         clipBehavior: Clip.hardEdge,
         height: 300,
         child: StreamBuilder(
-          stream: poller.responsesStream,
+          stream: source.responsesStream,
           builder: (context, snap) {
             _error = !snap.hasData;
             if (snap.hasData) {
@@ -220,19 +230,13 @@ class _HumidityAndTemperatureChartState
               final chart = <_ChartData>[];
               chart.add(_ChartData(time: mostLeft));
               for (var report in snap.data!) {
-                report = report.copyWith(
-                  timestamp: report.timestamp.copyWith(isUtc: true).toLocal(),
+                chart.add(
+                  _ChartData(
+                    time: report.timestamp,
+                    temperature: report.temp,
+                    humidity: report.hum,
+                  ),
                 );
-                if (report.timestamp.isAfter(mostLeft) &&
-                    report.timestamp.isBefore(mostRight)) {
-                  chart.add(
-                    _ChartData(
-                      time: report.timestamp,
-                      temperature: report.temp,
-                      humidity: report.hum,
-                    ),
-                  );
-                }
               }
               chart.add(_ChartData(time: mostRight));
 
@@ -276,9 +280,9 @@ class _HumidityAndTemperatureChartState
                   shownInterval = _captureInterval * details.scale;
                 },
                 child: StreamBuilder<bool>(
-                  stream: poller.runningFutureStream,
+                  stream: source.runningFutureStream,
                   builder: (context, snap) {
-                    if (poller.isRunningFuture) {
+                    if (source.isRunningFuture) {
                       return Stack(
                         children: [
                           Center(
@@ -304,10 +308,10 @@ class _HumidityAndTemperatureChartState
             } else if (snap.hasError) {
               return Center(
                 child: StreamBuilder<bool>(
-                  stream: poller.runningFutureStream,
+                  stream: source.runningFutureStream,
                   builder: (context, snap) {
                     // NOTE: poller.isRunningFuture != snap.data ?? false
-                    if (poller.isRunningFuture) {
+                    if (source.isRunningFuture) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
                       return Column(
