@@ -145,7 +145,6 @@ class _HumidityAndTemperatureChartState
         if (!_error &&
             const Duration(minutes: 3) < gap &&
             gap < const Duration(minutes: 7)) {
-          source.freeCache();
           _scroll(gap.inSeconds);
         }
       },

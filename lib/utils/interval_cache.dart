@@ -56,9 +56,11 @@ class IntervalCache<T extends DataPoint> {
     try {
       if (!interval.isSubintervalOf(_cachedInterval)) {
         // cache +- 12h additionally
+        final end = interval.stop.add(const Duration(hours: 12));
+        final now = DateTime.now();
         _cachedInterval = Interval(
           interval.start.subtract(const Duration(hours: 12)),
-          interval.stop.add(const Duration(hours: 12)),
+          end.isBefore(now) ? end : now,
         );
         _cachedPoints =
             await source([_cachedInterval], minResponseTime: minResponseTime);
