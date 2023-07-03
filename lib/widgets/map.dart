@@ -168,8 +168,8 @@ class _TrackerMapState extends State<TrackerMap> {
                       horizontal: 5,
                     ),
                     child: Text(
-                      DateFormat('yyyy-MM-dd H:mm:ss').format(
-                          snap.data!.timestamp.copyWith(isUtc: true).toLocal()),
+                      DateFormat('yyyy-MM-dd H:mm:ss')
+                          .format(snap.data!.timestamp),
                     ),
                   ),
                 ),
