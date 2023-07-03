@@ -233,8 +233,8 @@ class _HumidityAndTemperatureChartState
                 chart.add(
                   _ChartData(
                     time: report.timestamp,
-                    temperature: report.temp,
-                    humidity: report.hum,
+                    temperature: report.temp?.clamp(-20.0, 100.0),
+                    humidity: report.hum?.clamp(-20.0, 100.0),
                   ),
                 );
               }
