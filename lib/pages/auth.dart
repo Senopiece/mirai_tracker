@@ -12,11 +12,10 @@ class AuthPage extends StatefulWidget {
 // TODO: beautify
 class _AuthPageState extends State<AuthPage> {
   String selectedId = "aplha";
-  List<String> idList = ["aplha", "0x1", "0x2"];
-
   final List<String> items = [
     'aplha',
     'aremfincs1uk8m4rvrk9',
+    'rak5010-1'
   ];
 
   String? selectedValue;
